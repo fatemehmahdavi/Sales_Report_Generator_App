@@ -7,7 +7,7 @@ class Profile(models.Model):
     #whenever the user gets deleted the profile of the user gets deleted as well
     user=models.OneToOneField(User,on_delete=models.CASCADE) 
     bio=models.TextField()
-    avatar=models.ImageField(upload_to='avatars',default='no_picture.png')
+    avatar=models.ImageField(upload_to='avatars',blank=True)
     created=models.DateTimeField(auto_now_add=True)
     updated=models.DateTimeField(auto_now=True)
 

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block scripts %}
+ <script src="{%static'sales/home.js'%}"defer></script> {% comment %}The defer attribute tells the browser not to wait for the script. Instead, the browser will continue to process the HTML, build DOM. The script loads “in the background”, and then runs when the DOM is fully built. {% endcomment %}
+{% endblock scripts %}
+
+{% block title %}
+home
+{% endblock title  %}
+{% block content %}
+ <!-- Modal --> {% comment %} The Modal component is a dialog box/popup window that is displayed on top of the current page {% endcomment %}
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Report</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="alert-box"> {% comment %} alert if we successfully saved the report or not {% endcomment %}
+
+        </div>
+        <div class="modal-body" id="modal-body">
+          <form id="report-form">
+            {% csrf_token %}
+            {{report_form|crispy}}
+            <button type="button" class="btn btn-info mt-3">save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% if no_data %}
+    <div class="alert alert-warning" role="alert">
+        {{no_data}}
+    </div>
+{% endif %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{search_form|crispy}}
+    <button type="submit" class="btn btn-primary mt-3">search</button>
+</form>
+<br>
+
+
+{% if sales_df %}
+    sales_df
+     {{sales_df|safe}} {% comment %} safe:This flag tells Django that if a “safe” string is passed into your filter, the result will still be “safe” and if a non-safe string is passed in, Django will automatically escape it, if necessary.  {% endcomment %}
+     <br>
+     positions_df
+     {{positions_df|safe}}
+     <br>
+     merged_df
+     {{merged_df|safe}}
+     <br>
+     groupdby_df
+     {{df|safe}}
+     <br> 
+     <img src="data:image/png;base64, {{chart|safe}}" id='img'>
+{% endif %}
+
+<br>
+<button class="btn btn-primary" type="submit" id="report-btn" data-toggle="modal" data-target="#reportModal">add report</button>
+
+{% endblock content %}

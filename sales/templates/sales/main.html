@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}
+Sales List
+<br>
+{% endblock title %}
+{% block content %}
+    {% for obj in object_list %} {% comment %} if we are inheriting from a ListView we need to loop through the object_list unless we change the context_object_name in the view{% endcomment %}
+      <a href="{{obj.get_absolute_url}}">{{obj.transaction_id}}</a>  
+    {% endfor %}
+{% endblock content %}

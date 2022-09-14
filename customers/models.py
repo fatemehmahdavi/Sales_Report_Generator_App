@@ -10,7 +10,7 @@ from django.db import models
 #models is a library
 class Customer(models.Model):
     name=models.CharField(max_length=120)
-    logo=models.ImageField(upload_to='customers',default='no_picture.png')
+    logo=models.ImageField(upload_to='customers',blank=True)
     # read this page about __str__()https://www.digitalocean.com/community/tutorials/python-str-repr-functions
 # each cumstomer coming out of the Customer class wil be represeneted with the string representation which is referring to the name
     def __str__(self):

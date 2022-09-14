@@ -6,8 +6,11 @@ from customers.models import Customer
 from profiles.models import Profile
 from django.utils import timezone
 from .utils import generate_code
+from django.shortcuts import reverse
 # Create your models here.
+
 #position=product*quanitity
+
 class Position(models.Model):
     #whenever a product gets deleted all the positions to this product get deleted as well
     product=models.ForeignKey(Product, on_delete=models.CASCADE) 
@@ -15,6 +18,7 @@ class Position(models.Model):
     #by setting blank True,I want the price to be updated automatically by overriding the save method
     price=models.FloatField(blank=True) #blank=True means this field is optional
     created=models.DateTimeField(blank=True)
+
 #Think your super() is a gateway to the inherited class, you can call the methods of the parent class via super().
 # When you say that you want to override something in the parent method you necessarily only want to add to what the existing method is providing.
     def save(self,*args,**kwargs):
@@ -22,8 +26,17 @@ class Position(models.Model):
 #we do not know what arguments save is expecting so this is basically saying "any arguments passed into our new save(…) method, 
 # just hand them off to the old overridden save(…) method, positional arguments first followed by any keyword arguments"   
         return super().save(*args, **kwargs)
+    
+    def get_sales_id(self):
+        sale_obj=self.sale_set.all() #each position belongs to one Sale object #reverse relationship,Sale has access to Position
+        return sale_obj
+
     def __str__(self):
         return f"id:{self.id},product:{self.product.name},quantity:{self.quantity}"
+
+    def get_absolute_url(self): #navigate to another page
+        return reverse("sales:detail", kwargs={'pk': self.pk})
+    
 #each sale object can have many positions
 class Sale(models.Model):
     #transaction_id will be generated automatically so to do this I set the blank=True and override the save method
@@ -44,13 +57,15 @@ class Sale(models.Model):
         if self.created==None:
             self.created=timezone.now()
         return super().save(*args, **kwargs)
+
     def get_positions(self):
-        return self.positions.all()
+        return self.positions.all() #all objects in the database in the sale table
 
 class CSV(models.Model):
     file_name=models.FileField(upload_to='csv')
     activated=models.BooleanField(default=False) #if we've used a file already or not
     created=models.DateTimeField(auto_now_add=True)
     updated=models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.file_name
